@@ -1,0 +1,23 @@
+// Assume this is the Schema SQL
+CREATE TABLE Persons (
+    ID int NOT NULL,
+    Username varchar(255),
+    Parent int,
+    PRIMARY KEY (ID)
+);
+INSERT INTO Persons(ID, Username, Parent) VALUES(1, "Ali", 2);
+INSERT INTO Persons(ID, Username, Parent) VALUES(2, "Budi", 0);
+INSERT INTO Persons(ID, Username, Parent) VALUES(3, "Cecep", 1);
+
+// This is the ANSWER for the question
+
+SELECT data1.ID, data1.Username, data2.Username as ParentUsername
+FROM (
+	SELECT ID, Username, Parent
+  	FROM Persons
+) as data1
+LEFT JOIN (
+	SELECT ID, Username, Parent
+  	FROM Persons
+) as data2 ON data1.Parent = data2.ID
+ORDER BY data1.ID ASC
