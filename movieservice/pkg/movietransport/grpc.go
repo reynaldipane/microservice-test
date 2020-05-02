@@ -38,7 +38,7 @@ func NewGRPCServer(ctx context.Context, endpoint movieendpoint.Set) proto.MovieS
 func NewGRPCClient(conn *grpc.ClientConn) movieservice.Service {
 	var findMoviesEndpoint = grpctransport.NewClient(
 		conn,
-		"proto.MovieService",
+		"pb.MovieService",
 		"FindMovies",
 		models.EncodeGRPCFindMoviesRequest,
 		models.DecodeGRPCFindMoviesResponse,
