@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package proto;
+
+message Search {
+    string title = 1;
+    string year = 2;
+    string imdbID = 3;
+    string type = 4;
+    string poster = 5;
+}
+
+message MovieRequest {
+    string title = 1;
+    string page = 2;
+}
+
+message MovieResponse {
+    repeated Search search = 1;
+    string totalResults = 2;
+    string response = 3;
+}
+
+service MovieService {
+    rpc FindMovies(MovieRequest) returns (MovieResponse);
+}
