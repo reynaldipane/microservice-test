@@ -14,13 +14,32 @@ type Service interface {
 	FindMovies(ctx context.Context, movieRequest models.MovieRequest) (models.MovieResponse, error)
 }
 
-type MovieService struct{}
+type OmdbAPI struct {
+	Client  *http.Client
+	BaseURL string
+	APIKey  string
+}
+
+type MovieService struct {
+	OmdbAPI OmdbAPI
+}
+
+func NewMovieService(client *http.Client, baseURL, apiKey string) MovieService {
+	return MovieService{
+		OmdbAPI: OmdbAPI{
+			Client:  client,
+			BaseURL: baseURL,
+			APIKey:  apiKey,
+		},
+	}
+}
 
 func (m MovieService) FindMovies(_ context.Context, movieRequest models.MovieRequest) (models.MovieResponse, error) {
 	var movieResponse models.MovieResponse
-	url := fmt.Sprintf("http://www.omdbapi.com/?apikey=faf7e5bb&s=%s&page=%s", movieRequest.Title, movieRequest.Page)
 
-	response, err := http.Get(url)
+	url := fmt.Sprintf("%s/?apikey=%s&s=%s&page=%s", m.OmdbAPI.BaseURL, m.OmdbAPI.APIKey, movieRequest.Title, movieRequest.Page)
+
+	response, err := m.OmdbAPI.Client.Get(url)
 	if err != nil {
 		return movieResponse, err
 	}

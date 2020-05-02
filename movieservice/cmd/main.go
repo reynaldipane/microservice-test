@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -18,7 +19,9 @@ import (
 func main() {
 	ctx := context.Background()
 	var svc services.Service
-	svc = services.MovieService{}
+
+	// svc = services.MovieService{}
+	svc = services.NewMovieService(http.DefaultClient, "http://www.omdbapi.com", "faf7e5bb")
 	errChan := make(chan error)
 
 	endpoints := endpoints.Set{
