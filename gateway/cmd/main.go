@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/go-kit/kit/log"
+	conf "github.com/reynaldipane/microservice-test/gateway/pkg/configs"
 	"github.com/reynaldipane/microservice-test/gateway/pkg/endpoints"
 	"github.com/reynaldipane/microservice-test/gateway/pkg/services"
 	"github.com/reynaldipane/microservice-test/gateway/pkg/transports"
@@ -17,6 +18,8 @@ import (
 )
 
 func main() {
+	conf := conf.Config{}
+
 	var logger log.Logger
 	{
 		logger = log.NewLogfmtLogger(os.Stderr)
@@ -24,7 +27,7 @@ func main() {
 		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
 
-	grpcConn := initGRPCClient("localhost:4042")
+	grpcConn := initGRPCClient(conf.Get("MOVIE_SERVICE_GRPC_ADDRESS"))
 	services := services.New(movietransport.NewGRPCClient(grpcConn))
 	endpoints := endpoints.New(movieendpoint.New(services.MovieService))
 
@@ -38,11 +41,9 @@ func main() {
 	}()
 
 	go func() {
-		err := http.ListenAndServe(":8080", router)
+		err := http.ListenAndServe(fmt.Sprintf(":%s", conf.Get("PORT")), router)
 		if err != nil {
 			panic(err)
-		} else {
-			fmt.Println("Server connected on port :8080")
 		}
 		errc <- err
 	}()
